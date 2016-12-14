@@ -1,6 +1,6 @@
 import React from 'react';
 import {shallow} from 'enzyme';
-import App from '../lib/app';
+import App from '../lib/components/app';
 
 it('renders with a title', () => {
   const app = shallow(
