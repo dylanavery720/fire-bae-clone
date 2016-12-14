@@ -32,7 +32,11 @@ and visit localhost:8080
 
 ### Tests
 
-To run the tests, run `npm start` and visit localhost:8080/test.html
+The project uses jest, mocha and enzyme for testing.
+
+For more about Jest, visit [jest w webpack](https://facebook.github.io/jest/docs/tutorial-webpack.html#content)
+
+To run the tests, run `npm test`
 
 ### Deploy
 

@@ -12,13 +12,20 @@ module.exports = {
     loaders: [
       { test: /\.jsx?$/,
         exclude: '/node_modules|bower_components/',
-        loader: 'babel-loader',
+        loader: 'babel',
         query: { presets: ['es2015', 'react'] } },
       { test: /\.css$/, loader: "style!css" },
-      { test: /\.scss$/, loader: "style!css!sass" }
+      { test: /\.scss$/, loader: "style!css!sass" },
+      { test: /\\.gif$/, loader: "url-loader" },
+      { test: /\\.(ttf|eot|svg)$/, loader: "file-loader" },
     ]
   },
   resolve: {
     extensions: ['', '.js', '.jsx', '.json', '.scss', '.css']
+  },
+  externals: {
+    'react/addons': true,
+    'react/lib/ExecutionEnvironment': true,
+    'react/lib/ReactContext': true
   }
 }
