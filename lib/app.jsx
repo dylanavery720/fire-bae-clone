@@ -1,8 +1,8 @@
 const React = require('react');
 
 export default class App extends React.Component {
-  constructor() {
-    super();
+  constructor(props) {
+    super(props);
   }
 
   render() {
