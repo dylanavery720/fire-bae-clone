@@ -21,7 +21,7 @@ a roll of papertowels.
 To get started with a local copy of the project, fork the repo
 
 ```bash
-  cp config/application.example.yml config/application.yml
+  cp config/config.example.js config/config.js
   
   npm install
 
