@@ -1,5 +1,6 @@
 {
   "projects": {
-    "default": "personal-order"
+    "default": "personal-order",
+    "master": "personal-order-384ab"
   }
 }
