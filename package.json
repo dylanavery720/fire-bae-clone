@@ -6,7 +6,8 @@
   "scripts": {
     "start": "./node_modules/webpack-dev-server/bin/webpack-dev-server.js  --hot --inline",
     "build": "./node_modules/webpack/bin/webpack.js",
-    "test": "jest"
+    "test": "jest",
+    "deploy": "npm run build; firebase deploy"
   },
   "author": "Romeeka Gayhart",
   "license": "MIT",

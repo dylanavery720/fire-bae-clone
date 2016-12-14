@@ -1,5 +1,7 @@
 # Personal Order (FireBae Clone)
 
+### [Production](https://personal-order-384ab.firebaseapp.com/)
+
 A tool for keeping track of those nagging repetative purchases... with a
 little bit of machine learning for good measure.
 
@@ -52,6 +54,8 @@ npm install -g firebase-tools
 
 - run `npm run build`
 
-- firebase login
+- `firebase login`
 
-- firebase deploy
+- `firebase deploy`
+
+(you may need to use `firebase use --add` if you cannot access the app)
