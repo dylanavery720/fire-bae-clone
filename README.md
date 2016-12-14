@@ -28,7 +28,7 @@ To get started with a local copy of the project, fork the repo
   npm start
 ```
 
-and visit localhost:8080
+and visit localhost:8080/public/
 
 ### Tests
 
@@ -40,4 +40,18 @@ To run the tests, run `npm test`
 
 ### Deploy
 
-To deploy, run `npm run build`
+To deploy
+
+- Make sure you have the firebase-tools installed globally
+
+```
+npm install -g firebase-tools
+```
+
+- cd into your project directory
+
+- run `npm run build`
+
+- firebase login
+
+- firebase deploy
