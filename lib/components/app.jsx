@@ -1,29 +1,31 @@
-const React = require('react');
+import React from 'react';
+
+import Button from './Button';
 
 export default class App extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      user: null
-    }
+      user: null,
+    };
     this.updateUser = this.updateUser.bind(this);
     this.signIn = this.signIn.bind(this);
     this.signOut = this.signOut.bind(this);
   }
 
-  componentDidMount(){
+  componentDidMount() {
     this.props.firebase.onAuthStateChanged(this.updateUser);
   }
 
-  updateUser(user){
-   this.setState({ user })
+  updateUser(user) {
+    this.setState({ user });
   }
 
-  signIn(){
+  signIn() {
     this.props.firebase.signIn();
   }
 
-  signOut(){
+  signOut() {
     this.props.firebase.signOut();
   }
 
@@ -31,7 +33,8 @@ export default class App extends React.Component {
     const { user } = this.state;
     return (
       <div className="personal-order">
-        { user ? <button onClick={this.signOut}>Sign Out</button> : <button onClick={this.signIn}>Sign In</button> }
+        { user ? <Button handleClick={this.signOut} text="Sign Out" />
+        : <Button handleClick={this.signIn} text="Sign In" /> }
         <header>
           <h1>{ this.props.title }</h1>
         </header>
