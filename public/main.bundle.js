@@ -60,7 +60,7 @@
 
 	var _app2 = _interopRequireDefault(_app);
 
-	__webpack_require__(189);
+	__webpack_require__(190);
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -21528,7 +21528,7 @@
 	  }, {
 	    key: 'reference',
 	    value: function reference() {
-	      return _firebase2.default.database().ref('messages');
+	      return _firebase2.default.database().ref('items');
 	    }
 	  }]);
 
@@ -22258,6 +22258,10 @@
 
 	var _AddNewOrderItem2 = _interopRequireDefault(_AddNewOrderItem);
 
+	var _ItemIndex = __webpack_require__(189);
+
+	var _ItemIndex2 = _interopRequireDefault(_ItemIndex);
+
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -22276,7 +22280,8 @@
 
 	    _this.state = {
 	      user: null,
-	      showForm: false
+	      showForm: false,
+	      items: []
 	    };
 	    _this.updateUser = _this.updateUser.bind(_this);
 	    _this.showFormToggle = _this.showFormToggle.bind(_this);
@@ -22295,8 +22300,11 @@
 	    }
 	  }, {
 	    key: 'handleSubmitNewForm',
-	    value: function handleSubmitNewForm() {
+	    value: function handleSubmitNewForm(item) {
 	      this.showFormToggle();
+	      var itemStorage = this.state.items.slice();
+	      itemStorage.push(item);
+	      this.setState({ items: itemStorage });
 	    }
 	  }, {
 	    key: 'showFormToggle',
@@ -22341,7 +22349,8 @@
 	        _react2.default.createElement(
 	          'section',
 	          { className: 'main-content' },
-	          showForm ? _react2.default.createElement(_AddNewOrderItem2.default, { handleClick: this.handleSubmitNewForm }) : _react2.default.createElement(_Button2.default, { handleClick: this.showFormToggle, className: 'item__show-new-form', text: 'Add Item' })
+	          showForm ? _react2.default.createElement(_AddNewOrderItem2.default, { handleClick: this.handleSubmitNewForm }) : _react2.default.createElement(_Button2.default, { handleClick: this.showFormToggle, className: 'item__show-new-form', text: 'Add Item' }),
+	          _react2.default.createElement(_ItemIndex2.default, { items: this.state.items })
 	        )
 	      );
 	    }
@@ -22426,7 +22435,7 @@
 	  }, {
 	    key: 'handleSubmit',
 	    value: function handleSubmit(e) {
-	      this.props.handleClick();
+	      this.props.handleClick(this.state);
 	      e.preventDefault();
 	    }
 	  }, {
@@ -22439,9 +22448,12 @@
 	          'label',
 	          null,
 	          'Item Name:',
-	          _react2.default.createElement('input', { type: 'text', name: 'name', value: this.state.name, onChange: this.handleChange })
+	          _react2.default.createElement('input', { ref: 'name',
+	            type: 'text',
+	            value: this.state.name,
+	            onChange: this.handleChange })
 	        ),
-	        _react2.default.createElement('input', { className: 'item__create-submit', type: 'submit', value: 'Create Item', onSubmit: this.handleSubmit })
+	        _react2.default.createElement('input', { className: 'item__create-submit', type: 'submit', value: 'Create Item', onClick: this.handleSubmit })
 	      );
 	    }
 	  }]);
@@ -22455,13 +22467,49 @@
 /* 189 */
 /***/ function(module, exports, __webpack_require__) {
 
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+
+	exports.default = function () {
+	  var props = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+	  var _props$items = props.items,
+	      items = _props$items === undefined ? [] : _props$items;
+
+	  return _react2.default.createElement(
+	    'div',
+	    null,
+	    items.map(function (item) {
+	      return _react2.default.createElement(
+	        'p',
+	        null,
+	        ' ',
+	        item.name,
+	        ' '
+	      );
+	    })
+	  );
+	};
+
+	var _react = __webpack_require__(1);
+
+	var _react2 = _interopRequireDefault(_react);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+/***/ },
+/* 190 */
+/***/ function(module, exports, __webpack_require__) {
+
 	// style-loader: Adds some css to the DOM by adding a <style> tag
 
 	// load the styles
-	var content = __webpack_require__(190);
+	var content = __webpack_require__(191);
 	if(typeof content === 'string') content = [[module.id, content, '']];
 	// add the styles to the DOM
-	var update = __webpack_require__(192)(content, {});
+	var update = __webpack_require__(193)(content, {});
 	if(content.locals) module.exports = content.locals;
 	// Hot Module Replacement
 	if(false) {
@@ -22478,10 +22526,10 @@
 	}
 
 /***/ },
-/* 190 */
+/* 191 */
 /***/ function(module, exports, __webpack_require__) {
 
-	exports = module.exports = __webpack_require__(191)();
+	exports = module.exports = __webpack_require__(192)();
 	// imports
 
 
@@ -22492,7 +22540,7 @@
 
 
 /***/ },
-/* 191 */
+/* 192 */
 /***/ function(module, exports) {
 
 	/*
@@ -22548,7 +22596,7 @@
 
 
 /***/ },
-/* 192 */
+/* 193 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/*

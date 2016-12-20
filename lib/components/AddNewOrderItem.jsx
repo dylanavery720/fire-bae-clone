@@ -15,7 +15,7 @@ export default class AddNewOrderItem extends React.Component {
   }
 
   handleSubmit(e) {
-    this.props.handleClick();
+    this.props.handleClick(this.state);
     e.preventDefault();
   }
 
@@ -24,9 +24,12 @@ export default class AddNewOrderItem extends React.Component {
       <form>
         <label>
           Item Name:
-          <input type="text" name="name" value={this.state.name} onChange={this.handleChange} />
+          <input ref="name"
+                 type="text"
+                 value={this.state.name}
+                 onChange={this.handleChange}/>
         </label>
-        <input className="item__create-submit" type="submit" value="Create Item" onSubmit={this.handleSubmit} />
+        <input className="item__create-submit" type="submit" value="Create Item" onClick={this.handleSubmit} />
       </form>
     );
   }

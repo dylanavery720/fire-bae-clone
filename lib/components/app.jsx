@@ -2,6 +2,7 @@ import React from 'react';
 
 import Button from './Button';
 import AddNewOrderItem from './AddNewOrderItem';
+import ItemIndex from './ItemIndex';
 
 export default class App extends React.Component {
   constructor(props) {
@@ -9,6 +10,7 @@ export default class App extends React.Component {
     this.state = {
       user: null,
       showForm: false,
+      items: [],
     };
     this.updateUser = this.updateUser.bind(this);
     this.showFormToggle = this.showFormToggle.bind(this);
@@ -23,8 +25,11 @@ export default class App extends React.Component {
     }
   }
 
-  handleSubmitNewForm() {
+  handleSubmitNewForm(item) {
     this.showFormToggle();
+    const itemStorage = this.state.items.slice();
+    itemStorage.push(item);
+    this.setState({ items: itemStorage });
   }
 
   showFormToggle() {
@@ -54,6 +59,7 @@ export default class App extends React.Component {
         </header>
         <section className="main-content">
           { showForm ? <AddNewOrderItem handleClick={this.handleSubmitNewForm}/> : <Button handleClick={this.showFormToggle} className='item__show-new-form' text="Add Item" /> }
+          <ItemIndex items={this.state.items} />
         </section>
       </div>
     );
