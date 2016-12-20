@@ -60,7 +60,7 @@
 
 	var _app2 = _interopRequireDefault(_app);
 
-	__webpack_require__(188);
+	__webpack_require__(190);
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -21528,7 +21528,7 @@
 	  }, {
 	    key: 'reference',
 	    value: function reference() {
-	      return _firebase2.default.database().ref('messages');
+	      return _firebase2.default.database().ref('items');
 	    }
 	  }]);
 
@@ -22254,6 +22254,14 @@
 
 	var _Button2 = _interopRequireDefault(_Button);
 
+	var _AddNewOrderItem = __webpack_require__(188);
+
+	var _AddNewOrderItem2 = _interopRequireDefault(_AddNewOrderItem);
+
+	var _ItemIndex = __webpack_require__(189);
+
+	var _ItemIndex2 = _interopRequireDefault(_ItemIndex);
+
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -22271,9 +22279,13 @@
 	    var _this = _possibleConstructorReturn(this, (App.__proto__ || Object.getPrototypeOf(App)).call(this, props));
 
 	    _this.state = {
-	      user: null
+	      user: null,
+	      showForm: false,
+	      items: []
 	    };
 	    _this.updateUser = _this.updateUser.bind(_this);
+	    _this.showFormToggle = _this.showFormToggle.bind(_this);
+	    _this.handleSubmitNewForm = _this.handleSubmitNewForm.bind(_this);
 	    _this.signIn = _this.signIn.bind(_this);
 	    _this.signOut = _this.signOut.bind(_this);
 	    return _this;
@@ -22282,7 +22294,22 @@
 	  _createClass(App, [{
 	    key: 'componentDidMount',
 	    value: function componentDidMount() {
-	      this.props.firebase.onAuthStateChanged(this.updateUser);
+	      if (this.props.firebase) {
+	        this.props.firebase.onAuthStateChanged(this.updateUser);
+	      }
+	    }
+	  }, {
+	    key: 'handleSubmitNewForm',
+	    value: function handleSubmitNewForm(item) {
+	      this.showFormToggle();
+	      var itemStorage = this.state.items.slice();
+	      itemStorage.push(item);
+	      this.setState({ items: itemStorage });
+	    }
+	  }, {
+	    key: 'showFormToggle',
+	    value: function showFormToggle() {
+	      this.setState({ showForm: !this.state.showForm });
 	    }
 	  }, {
 	    key: 'updateUser',
@@ -22302,7 +22329,9 @@
 	  }, {
 	    key: 'render',
 	    value: function render() {
-	      var user = this.state.user;
+	      var _state = this.state,
+	          user = _state.user,
+	          showForm = _state.showForm;
 
 	      return _react2.default.createElement(
 	        'div',
@@ -22317,7 +22346,12 @@
 	            this.props.title
 	          )
 	        ),
-	        _react2.default.createElement('section', { className: 'main-content' })
+	        _react2.default.createElement(
+	          'section',
+	          { className: 'main-content' },
+	          showForm ? _react2.default.createElement(_AddNewOrderItem2.default, { handleClick: this.handleSubmitNewForm }) : _react2.default.createElement(_Button2.default, { handleClick: this.showFormToggle, className: 'item__show-new-form', text: 'Add Item' }),
+	          _react2.default.createElement(_ItemIndex2.default, { items: this.state.items })
+	        )
 	      );
 	    }
 	  }]);
@@ -22348,7 +22382,7 @@
 	exports.default = function (props) {
 	  return _react2.default.createElement(
 	    'button',
-	    { onClick: props.handleClick },
+	    { onClick: props.handleClick, className: props.className },
 	    props.text
 	  );
 	};
@@ -22357,13 +22391,125 @@
 /* 188 */
 /***/ function(module, exports, __webpack_require__) {
 
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+	var _react = __webpack_require__(1);
+
+	var _react2 = _interopRequireDefault(_react);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+	var AddNewOrderItem = function (_React$Component) {
+	  _inherits(AddNewOrderItem, _React$Component);
+
+	  function AddNewOrderItem(props) {
+	    _classCallCheck(this, AddNewOrderItem);
+
+	    var _this = _possibleConstructorReturn(this, (AddNewOrderItem.__proto__ || Object.getPrototypeOf(AddNewOrderItem)).call(this, props));
+
+	    _this.state = {
+	      name: ''
+	    };
+	    _this.handleChange = _this.handleChange.bind(_this);
+	    _this.handleSubmit = _this.handleSubmit.bind(_this);
+	    return _this;
+	  }
+
+	  _createClass(AddNewOrderItem, [{
+	    key: 'handleChange',
+	    value: function handleChange(event) {
+	      this.setState({ name: event.target.value });
+	    }
+	  }, {
+	    key: 'handleSubmit',
+	    value: function handleSubmit(e) {
+	      this.props.handleClick(this.state);
+	      e.preventDefault();
+	    }
+	  }, {
+	    key: 'render',
+	    value: function render() {
+	      return _react2.default.createElement(
+	        'form',
+	        null,
+	        _react2.default.createElement(
+	          'label',
+	          null,
+	          'Item Name:',
+	          _react2.default.createElement('input', { ref: 'name',
+	            type: 'text',
+	            value: this.state.name,
+	            onChange: this.handleChange })
+	        ),
+	        _react2.default.createElement('input', { className: 'item__create-submit', type: 'submit', value: 'Create Item', onClick: this.handleSubmit })
+	      );
+	    }
+	  }]);
+
+	  return AddNewOrderItem;
+	}(_react2.default.Component);
+
+	exports.default = AddNewOrderItem;
+
+/***/ },
+/* 189 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+
+	exports.default = function () {
+	  var props = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+	  var _props$items = props.items,
+	      items = _props$items === undefined ? [] : _props$items;
+
+	  return _react2.default.createElement(
+	    'div',
+	    null,
+	    items.map(function (item) {
+	      return _react2.default.createElement(
+	        'p',
+	        null,
+	        ' ',
+	        item.name,
+	        ' '
+	      );
+	    })
+	  );
+	};
+
+	var _react = __webpack_require__(1);
+
+	var _react2 = _interopRequireDefault(_react);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+/***/ },
+/* 190 */
+/***/ function(module, exports, __webpack_require__) {
+
 	// style-loader: Adds some css to the DOM by adding a <style> tag
 
 	// load the styles
-	var content = __webpack_require__(189);
+	var content = __webpack_require__(191);
 	if(typeof content === 'string') content = [[module.id, content, '']];
 	// add the styles to the DOM
-	var update = __webpack_require__(191)(content, {});
+	var update = __webpack_require__(193)(content, {});
 	if(content.locals) module.exports = content.locals;
 	// Hot Module Replacement
 	if(false) {
@@ -22380,10 +22526,10 @@
 	}
 
 /***/ },
-/* 189 */
+/* 191 */
 /***/ function(module, exports, __webpack_require__) {
 
-	exports = module.exports = __webpack_require__(190)();
+	exports = module.exports = __webpack_require__(192)();
 	// imports
 
 
@@ -22394,7 +22540,7 @@
 
 
 /***/ },
-/* 190 */
+/* 192 */
 /***/ function(module, exports) {
 
 	/*
@@ -22450,7 +22596,7 @@
 
 
 /***/ },
-/* 191 */
+/* 193 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/*
