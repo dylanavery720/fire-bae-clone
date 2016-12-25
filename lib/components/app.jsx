@@ -1,5 +1,7 @@
 import React from 'react';
 
+import Item from '../Item';
+
 import Button from './Button';
 import AddNewOrderItem from './AddNewOrderItem';
 import ItemIndex from './ItemIndex';
@@ -25,11 +27,10 @@ export default class App extends React.Component {
     }
   }
 
-  handleSubmitNewForm(item) {
+  handleSubmitNewForm(itemPayload) {
     this.showFormToggle();
-    const itemStorage = this.state.items.slice();
-    itemStorage.push(item);
-    this.setState({ items: itemStorage });
+    let currentUser = this.props.firebase.auth.currentUser;
+    if (currentUser){ this.createItem(currentUser, itemPayload) };
   }
 
   showFormToggle() {
@@ -38,6 +39,11 @@ export default class App extends React.Component {
 
   updateUser(user) {
     this.setState({ user });
+    if(user){
+      this.props.firebase.getItems(user, (items) => this.setState({ items: items }));
+    } else {
+      this.setState({ items: [] });
+    }
   }
 
   signIn() {
@@ -46,6 +52,14 @@ export default class App extends React.Component {
 
   signOut() {
     this.props.firebase.signOut();
+  }
+
+  createItem(currentUser, itemPayload){
+    let item = new Item(currentUser, itemPayload);
+    this.props.firebase.createItem(currentUser, item);
+    const itemStorage = this.state.items.slice();
+    itemStorage.push(item);
+    this.setState({ items: itemStorage });
   }
 
   render() {
