@@ -3,45 +3,60 @@
 import React from 'react'; // eslint-disable-line no-unused-vars
 import { shallow, render, mount } from 'enzyme';
 import App from '../lib/components/app';
-import Button from '../lib/components/Button';
 import AddNewOrderItem from '../lib/components/AddNewOrderItem';
 
-it('renders with a title', () => {
-  const app = shallow(
-    <App title="New Title"/>
-  );
+describe('App', () => {
+  it('renders with a title', () => {
+    const app = shallow(
+      <App title="New Title"/>
+    );
 
-  expect(app.contains('New Title')).toEqual(true);
-});
+    expect(app.contains('New Title')).toEqual(true);
+  });
 
-it('gives you a signIn prompt when not logged in', () => {
-  const app = render(
-    <App />
-  );
+  context('when logged out', () => {
+    it('gives you a signIn prompt', () => {
+      const app = render(
+        <App />
+      );
 
-  expect(app.text()).toContain('Sign In');
-});
+      expect(app.text()).toContain('Sign In');
+    });
 
-xit('gives you a signOut prompt when logged in', () => {
-  const app = shallow(
-    <App />
-  );
+    it('does not allow you to create new items', () => {
+      const app = shallow(
+        <App />
+      );
 
-  app.setState({ user: [] });
+      expect(app.find('.item__show-new-form').length).toEqual(0);
+    });
+  });
 
-  expect(app.find(Button).text()).toEqual({});
-});
+  context('when logged in', () => {
+    it('gives you a signOut prompt when logged in', () => {
+      const app = mount(
+        <App />
+      );
 
-it('toggles the new item form', () => {
-  const app = mount(
-    <App />
-  );
+      app.setState({ user: {} });
 
-  const showButton = app.find('.item__show-new-form');
+      expect(app.find('.auth-toggle-button').text()).toEqual('Sign Out');
+    });
 
-  expect(showButton.length).toEqual(1);
+    it('toggles the new item form', () => {
+      const app = mount(
+        <App />
+      );
 
-  showButton.simulate('click');
+      app.setState({ user: {} });
 
-  expect(app.find(AddNewOrderItem).length).toEqual(1);
+      const showButton = app.find('.item__show-new-form');
+
+      expect(showButton.length).toEqual(1);
+
+      showButton.simulate('click');
+
+      expect(app.find(AddNewOrderItem).length).toEqual(1);
+    });
+  });
 });

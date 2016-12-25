@@ -3,8 +3,7 @@ import React from 'react';
 import Item from '../Item';
 
 import Button from './Button';
-import AddNewOrderItem from './AddNewOrderItem';
-import ItemIndex from './ItemIndex';
+import ItemMainContent from './ItemMainContent';
 
 export default class App extends React.Component {
   constructor(props) {
@@ -29,8 +28,8 @@ export default class App extends React.Component {
 
   handleSubmitNewForm(itemPayload) {
     this.showFormToggle();
-    let currentUser = this.props.firebase.auth.currentUser;
-    if (currentUser){ this.createItem(currentUser, itemPayload) };
+    const currentUser = this.props.firebase.auth.currentUser;
+    if (currentUser) { this.createItem(currentUser, itemPayload); }
   }
 
   showFormToggle() {
@@ -38,10 +37,11 @@ export default class App extends React.Component {
   }
 
   updateUser(user) {
-    this.setState({ user });
-    if(user){
-      this.props.firebase.getItems(user, (items) => this.setState({ items: items }));
+    if (user) {
+      this.setState({ user });
+      this.props.firebase.getItems(user, (items) => this.setState({ items }));
     } else {
+      this.setState({ user: null });
       this.setState({ items: [] });
     }
   }
@@ -54,8 +54,8 @@ export default class App extends React.Component {
     this.props.firebase.signOut();
   }
 
-  createItem(currentUser, itemPayload){
-    let item = new Item(currentUser, itemPayload);
+  createItem(currentUser, itemPayload) {
+    const item = new Item(currentUser, itemPayload);
     this.props.firebase.createItem(currentUser, item);
     const itemStorage = this.state.items.slice();
     itemStorage.push(item);
@@ -63,18 +63,20 @@ export default class App extends React.Component {
   }
 
   render() {
-    const { user, showForm } = this.state;
+    const { user } = this.state;
     return (
       <div className="personal-order">
-        { user ? <Button handleClick={this.signOut} text="Sign Out" />
-        : <Button handleClick={this.signIn} text="Sign In" /> }
+        { user ? <Button handleClick={this.signOut} className="auth-toggle-button" text="Sign Out" />
+        : <Button handleClick={this.signIn} className="auth-toggle-button" text="Sign In" /> }
         <header>
           <h1>{ this.props.title }</h1>
         </header>
-        <section className="main-content">
-          { showForm ? <AddNewOrderItem handleClick={this.handleSubmitNewForm}/> : <Button handleClick={this.showFormToggle} className='item__show-new-form' text="Add Item" /> }
-          <ItemIndex items={this.state.items} />
-        </section>
+        { user ?
+        <ItemMainContent showForm={ this.state.showForm }
+                         items={ this.state.items }
+                         handleSubmitNewForm={ this.handleSubmitNewForm }
+                         showFormToggle={ this.showFormToggle } />
+        : <div></div> }
       </div>
     );
   }

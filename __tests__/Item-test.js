@@ -1,3 +1,4 @@
+/* eslint no-undef:0 comma-dangle:0*/
 import Item from '../lib/Item';
 
 describe('Item', () => {
@@ -6,6 +7,6 @@ describe('Item', () => {
     const itemPayload = { name: 'New Item' };
     const item = new Item(user, itemPayload);
     expect(item.name).toEqual('New Item');
-    expect(item.user.uid).toEqual(7); 
+    expect(item.user.uid).toEqual(7);
   });
 });
