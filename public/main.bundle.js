@@ -60,7 +60,7 @@
 
 	var _app2 = _interopRequireDefault(_app);
 
-	__webpack_require__(190);
+	__webpack_require__(192);
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -21504,31 +21504,53 @@
 	    _classCallCheck(this, FirebaseTalker);
 
 	    _firebase2.default.initializeApp(_config.firebaseConfig);
-	    this.auth = _firebase2.default.auth;
+	    this.auth = _firebase2.default.auth();
+	    this.database = _firebase2.default.database();
 	    this.provider = new _firebase2.default.auth.GoogleAuthProvider();
 	    this.signIn = this.signIn.bind(this);
-	    this.reference = this.reference.bind(this);
+	    this.itemsReference = this.reference.bind(this, 'items');
 	  }
 
 	  _createClass(FirebaseTalker, [{
 	    key: 'signIn',
 	    value: function signIn() {
-	      return this.auth().signInWithPopup(this.provider);
+	      return this.auth.signInWithPopup(this.provider);
 	    }
 	  }, {
 	    key: 'signOut',
 	    value: function signOut() {
-	      return this.auth().signOut();
+	      return this.auth.signOut();
 	    }
 	  }, {
 	    key: 'onAuthStateChanged',
 	    value: function onAuthStateChanged(callback) {
-	      return this.auth().onAuthStateChanged(callback);
+	      return this.auth.onAuthStateChanged(callback);
+	    }
+	  }, {
+	    key: 'currentUser',
+	    value: function currentUser() {
+	      return this.auth.currentUser;
 	    }
 	  }, {
 	    key: 'reference',
-	    value: function reference() {
-	      return _firebase2.default.database().ref('items');
+	    value: function reference(path) {
+	      return this.database.ref(path);
+	    }
+	  }, {
+	    key: 'getItems',
+	    value: function getItems(user, callback) {
+	      var reference = this.reference('items/' + user.uid);
+	      reference.on('value', function (snapshot) {
+	        var itemsPayload = snapshot.val() || {};
+	        var items = Object.values(itemsPayload);
+	        callback(items);
+	      });
+	    }
+	  }, {
+	    key: 'createItem',
+	    value: function createItem(user, itemPayload) {
+	      var uid = user.uid;
+	      return this.reference('items/' + uid).push(itemPayload);
 	    }
 	  }]);
 
@@ -22250,17 +22272,17 @@
 
 	var _react2 = _interopRequireDefault(_react);
 
-	var _Button = __webpack_require__(187);
+	var _Item = __webpack_require__(187);
+
+	var _Item2 = _interopRequireDefault(_Item);
+
+	var _Button = __webpack_require__(188);
 
 	var _Button2 = _interopRequireDefault(_Button);
 
-	var _AddNewOrderItem = __webpack_require__(188);
+	var _ItemMainContent = __webpack_require__(189);
 
-	var _AddNewOrderItem2 = _interopRequireDefault(_AddNewOrderItem);
-
-	var _ItemIndex = __webpack_require__(189);
-
-	var _ItemIndex2 = _interopRequireDefault(_ItemIndex);
+	var _ItemMainContent2 = _interopRequireDefault(_ItemMainContent);
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -22300,11 +22322,12 @@
 	    }
 	  }, {
 	    key: 'handleSubmitNewForm',
-	    value: function handleSubmitNewForm(item) {
+	    value: function handleSubmitNewForm(itemPayload) {
 	      this.showFormToggle();
-	      var itemStorage = this.state.items.slice();
-	      itemStorage.push(item);
-	      this.setState({ items: itemStorage });
+	      var currentUser = this.props.firebase.auth.currentUser;
+	      if (currentUser) {
+	        this.createItem(currentUser, itemPayload);
+	      }
 	    }
 	  }, {
 	    key: 'showFormToggle',
@@ -22314,7 +22337,17 @@
 	  }, {
 	    key: 'updateUser',
 	    value: function updateUser(user) {
-	      this.setState({ user: user });
+	      var _this2 = this;
+
+	      if (user) {
+	        this.setState({ user: user });
+	        this.props.firebase.getItems(user, function (items) {
+	          return _this2.setState({ items: items });
+	        });
+	      } else {
+	        this.setState({ user: null });
+	        this.setState({ items: [] });
+	      }
 	    }
 	  }, {
 	    key: 'signIn',
@@ -22327,16 +22360,23 @@
 	      this.props.firebase.signOut();
 	    }
 	  }, {
+	    key: 'createItem',
+	    value: function createItem(currentUser, itemPayload) {
+	      var item = new _Item2.default(currentUser, itemPayload);
+	      this.props.firebase.createItem(currentUser, item);
+	      var itemStorage = this.state.items.slice();
+	      itemStorage.push(item);
+	      this.setState({ items: itemStorage });
+	    }
+	  }, {
 	    key: 'render',
 	    value: function render() {
-	      var _state = this.state,
-	          user = _state.user,
-	          showForm = _state.showForm;
+	      var user = this.state.user;
 
 	      return _react2.default.createElement(
 	        'div',
 	        { className: 'personal-order' },
-	        user ? _react2.default.createElement(_Button2.default, { handleClick: this.signOut, text: 'Sign Out' }) : _react2.default.createElement(_Button2.default, { handleClick: this.signIn, text: 'Sign In' }),
+	        user ? _react2.default.createElement(_Button2.default, { handleClick: this.signOut, className: 'auth-toggle-button', text: 'Sign Out' }) : _react2.default.createElement(_Button2.default, { handleClick: this.signIn, className: 'auth-toggle-button', text: 'Sign In' }),
 	        _react2.default.createElement(
 	          'header',
 	          null,
@@ -22346,12 +22386,10 @@
 	            this.props.title
 	          )
 	        ),
-	        _react2.default.createElement(
-	          'section',
-	          { className: 'main-content' },
-	          showForm ? _react2.default.createElement(_AddNewOrderItem2.default, { handleClick: this.handleSubmitNewForm }) : _react2.default.createElement(_Button2.default, { handleClick: this.showFormToggle, className: 'item__show-new-form', text: 'Add Item' }),
-	          _react2.default.createElement(_ItemIndex2.default, { items: this.state.items })
-	        )
+	        user ? _react2.default.createElement(_ItemMainContent2.default, { showForm: this.state.showForm,
+	          items: this.state.items,
+	          handleSubmitNewForm: this.handleSubmitNewForm,
+	          showFormToggle: this.showFormToggle }) : _react2.default.createElement('div', null)
 	      );
 	    }
 	  }]);
@@ -22363,6 +22401,29 @@
 
 /***/ },
 /* 187 */
+/***/ function(module, exports) {
+
+	"use strict";
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	var Item = function Item(user, item) {
+	  _classCallCheck(this, Item);
+
+	  this.user = {
+	    uid: user.uid
+	  };
+	  this.name = item.name;
+	};
+
+	exports.default = Item;
+
+/***/ },
+/* 188 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -22382,13 +22443,117 @@
 	exports.default = function (props) {
 	  return _react2.default.createElement(
 	    'button',
-	    { onClick: props.handleClick, className: props.className },
+	    { onClick: props.handleClick, className: props.className + ' button' },
 	    props.text
 	  );
 	};
 
 /***/ },
-/* 188 */
+/* 189 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+	var _react = __webpack_require__(1);
+
+	var _react2 = _interopRequireDefault(_react);
+
+	var _Button = __webpack_require__(188);
+
+	var _Button2 = _interopRequireDefault(_Button);
+
+	var _ItemIndex = __webpack_require__(190);
+
+	var _ItemIndex2 = _interopRequireDefault(_ItemIndex);
+
+	var _AddNewOrderItem = __webpack_require__(191);
+
+	var _AddNewOrderItem2 = _interopRequireDefault(_AddNewOrderItem);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+	var ItemMainContent = function (_React$Component) {
+	  _inherits(ItemMainContent, _React$Component);
+
+	  function ItemMainContent() {
+	    _classCallCheck(this, ItemMainContent);
+
+	    return _possibleConstructorReturn(this, (ItemMainContent.__proto__ || Object.getPrototypeOf(ItemMainContent)).apply(this, arguments));
+	  }
+
+	  _createClass(ItemMainContent, [{
+	    key: 'render',
+	    value: function render() {
+	      var _props = this.props,
+	          showForm = _props.showForm,
+	          items = _props.items,
+	          handleSubmitNewForm = _props.handleSubmitNewForm,
+	          showFormToggle = _props.showFormToggle;
+
+	      return _react2.default.createElement(
+	        'section',
+	        { className: 'main-content' },
+	        showForm ? _react2.default.createElement(_AddNewOrderItem2.default, { handleClick: handleSubmitNewForm }) : _react2.default.createElement(_Button2.default, { handleClick: showFormToggle, className: 'item__show-new-form', text: 'Add Item' }),
+	        _react2.default.createElement(_ItemIndex2.default, { items: items })
+	      );
+	    }
+	  }]);
+
+	  return ItemMainContent;
+	}(_react2.default.Component);
+
+	exports.default = ItemMainContent;
+
+/***/ },
+/* 190 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+
+	exports.default = function () {
+	  var props = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+	  var _props$items = props.items,
+	      items = _props$items === undefined ? [] : _props$items;
+
+	  return _react2.default.createElement(
+	    'div',
+	    null,
+	    items.map(function (item) {
+	      return _react2.default.createElement(
+	        'p',
+	        null,
+	        ' ',
+	        item.name,
+	        ' '
+	      );
+	    })
+	  );
+	};
+
+	var _react = __webpack_require__(1);
+
+	var _react2 = _interopRequireDefault(_react);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+/***/ },
+/* 191 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -22464,52 +22629,16 @@
 	exports.default = AddNewOrderItem;
 
 /***/ },
-/* 189 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-
-	exports.default = function () {
-	  var props = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
-	  var _props$items = props.items,
-	      items = _props$items === undefined ? [] : _props$items;
-
-	  return _react2.default.createElement(
-	    'div',
-	    null,
-	    items.map(function (item) {
-	      return _react2.default.createElement(
-	        'p',
-	        null,
-	        ' ',
-	        item.name,
-	        ' '
-	      );
-	    })
-	  );
-	};
-
-	var _react = __webpack_require__(1);
-
-	var _react2 = _interopRequireDefault(_react);
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-/***/ },
-/* 190 */
+/* 192 */
 /***/ function(module, exports, __webpack_require__) {
 
 	// style-loader: Adds some css to the DOM by adding a <style> tag
 
 	// load the styles
-	var content = __webpack_require__(191);
+	var content = __webpack_require__(193);
 	if(typeof content === 'string') content = [[module.id, content, '']];
 	// add the styles to the DOM
-	var update = __webpack_require__(193)(content, {});
+	var update = __webpack_require__(195)(content, {});
 	if(content.locals) module.exports = content.locals;
 	// Hot Module Replacement
 	if(false) {
@@ -22526,10 +22655,10 @@
 	}
 
 /***/ },
-/* 191 */
+/* 193 */
 /***/ function(module, exports, __webpack_require__) {
 
-	exports = module.exports = __webpack_require__(192)();
+	exports = module.exports = __webpack_require__(194)();
 	// imports
 
 
@@ -22540,7 +22669,7 @@
 
 
 /***/ },
-/* 192 */
+/* 194 */
 /***/ function(module, exports) {
 
 	/*
@@ -22596,7 +22725,7 @@
 
 
 /***/ },
-/* 193 */
+/* 195 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/*
