@@ -4,9 +4,12 @@ import Item from '../lib/Item';
 describe('Item', () => {
   it('creates a new item', () => {
     const user = { uid: 7 };
-    const itemPayload = { name: 'New Item' };
+    const itemPayload = { iName: 'New Item', freqNum: 1, freqQual: 'eon(s)' };
     const item = new Item(user, itemPayload);
-    expect(item.name).toEqual('New Item');
+    Object.keys(itemPayload).forEach((key) => {
+      expect(item[key]).toEqual(itemPayload[key]);
+    });
+    expect(item.iName).toEqual('New Item');
     expect(item.user.uid).toEqual(7);
   });
 });
