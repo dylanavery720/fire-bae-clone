@@ -60,7 +60,7 @@
 
 	var _app2 = _interopRequireDefault(_app);
 
-	__webpack_require__(192);
+	__webpack_require__(193);
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -22417,7 +22417,9 @@
 	  this.user = {
 	    uid: user.uid
 	  };
-	  this.name = item.name;
+	  this.iName = item.iName;
+	  this.freqNum = item.freqNum;
+	  this.freqQual = item.freqQual;
 	};
 
 	exports.default = Item;
@@ -22472,7 +22474,7 @@
 
 	var _ItemIndex2 = _interopRequireDefault(_ItemIndex);
 
-	var _AddNewOrderItem = __webpack_require__(191);
+	var _AddNewOrderItem = __webpack_require__(192);
 
 	var _AddNewOrderItem2 = _interopRequireDefault(_AddNewOrderItem);
 
@@ -22535,13 +22537,7 @@
 	    'div',
 	    null,
 	    items.map(function (item) {
-	      return _react2.default.createElement(
-	        'p',
-	        null,
-	        ' ',
-	        item.name,
-	        ' '
-	      );
+	      return _react2.default.createElement(_ItemCard2.default, { item: item });
 	    })
 	  );
 	};
@@ -22550,10 +22546,67 @@
 
 	var _react2 = _interopRequireDefault(_react);
 
+	var _ItemCard = __webpack_require__(191);
+
+	var _ItemCard2 = _interopRequireDefault(_ItemCard);
+
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 /***/ },
 /* 191 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+
+	var _react = __webpack_require__(1);
+
+	var _react2 = _interopRequireDefault(_react);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	// eslint-disable-line no-unused-vars
+
+	function formatedFrequencyText(item) {
+	  var freqNum = item.freqNum,
+	      freqQual = item.freqQual;
+
+	  var pluralized = freqQual;
+	  if (freqNum > 1) {
+	    pluralized = freqQual + 's';
+	  }
+	  return 'Purchased every ' + freqNum + ' ' + pluralized;
+	}
+
+	exports.default = function (props) {
+	  var _props$item = props.item,
+	      item = _props$item === undefined ? {} : _props$item;
+
+	  return _react2.default.createElement(
+	    'div',
+	    null,
+	    _react2.default.createElement(
+	      'p',
+	      null,
+	      ' ',
+	      item.iName,
+	      ' '
+	    ),
+	    _react2.default.createElement(
+	      'p',
+	      null,
+	      ' ',
+	      formatedFrequencyText(item),
+	      ' '
+	    )
+	  );
+	};
+
+/***/ },
+/* 192 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -22570,6 +22623,8 @@
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
+	function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
@@ -22585,7 +22640,9 @@
 	    var _this = _possibleConstructorReturn(this, (AddNewOrderItem.__proto__ || Object.getPrototypeOf(AddNewOrderItem)).call(this, props));
 
 	    _this.state = {
-	      name: ''
+	      iName: '',
+	      freqNum: 1,
+	      freqQual: 'month'
 	    };
 	    _this.handleChange = _this.handleChange.bind(_this);
 	    _this.handleSubmit = _this.handleSubmit.bind(_this);
@@ -22595,7 +22652,7 @@
 	  _createClass(AddNewOrderItem, [{
 	    key: 'handleChange',
 	    value: function handleChange(event) {
-	      this.setState({ name: event.target.value });
+	      this.setState(_defineProperty({}, event.target.name, event.target.value));
 	    }
 	  }, {
 	    key: 'handleSubmit',
@@ -22613,12 +22670,52 @@
 	          'label',
 	          null,
 	          'Item Name:',
-	          _react2.default.createElement('input', { ref: 'name',
+	          _react2.default.createElement('input', { ref: 'iName',
+	            name: 'iName',
 	            type: 'text',
-	            value: this.state.name,
+	            value: this.state.iName,
 	            onChange: this.handleChange })
 	        ),
-	        _react2.default.createElement('input', { className: 'item__create-submit', type: 'submit', value: 'Create Item', onClick: this.handleSubmit })
+	        'I purchase this every:',
+	        _react2.default.createElement(
+	          'label',
+	          null,
+	          _react2.default.createElement('input', { type: 'number',
+	            ref: 'freqNum',
+	            name: 'freqNum',
+	            value: this.state.freqNum,
+	            onChange: this.handleChange })
+	        ),
+	        _react2.default.createElement(
+	          'label',
+	          null,
+	          _react2.default.createElement(
+	            'select',
+	            { name: 'freqQual',
+	              ref: 'freqQual',
+	              value: this.state.freqQual,
+	              onChange: this.handleChange },
+	            _react2.default.createElement(
+	              'option',
+	              { value: 'month' },
+	              'month(s)'
+	            ),
+	            _react2.default.createElement(
+	              'option',
+	              { value: 'week' },
+	              'week(s)'
+	            ),
+	            _react2.default.createElement(
+	              'option',
+	              { value: 'year' },
+	              'year(s)'
+	            )
+	          )
+	        ),
+	        _react2.default.createElement('input', { className: 'item__create-submit',
+	          type: 'submit',
+	          value: 'Create Item',
+	          onClick: this.handleSubmit })
 	      );
 	    }
 	  }]);
@@ -22629,16 +22726,16 @@
 	exports.default = AddNewOrderItem;
 
 /***/ },
-/* 192 */
+/* 193 */
 /***/ function(module, exports, __webpack_require__) {
 
 	// style-loader: Adds some css to the DOM by adding a <style> tag
 
 	// load the styles
-	var content = __webpack_require__(193);
+	var content = __webpack_require__(194);
 	if(typeof content === 'string') content = [[module.id, content, '']];
 	// add the styles to the DOM
-	var update = __webpack_require__(195)(content, {});
+	var update = __webpack_require__(196)(content, {});
 	if(content.locals) module.exports = content.locals;
 	// Hot Module Replacement
 	if(false) {
@@ -22655,10 +22752,10 @@
 	}
 
 /***/ },
-/* 193 */
+/* 194 */
 /***/ function(module, exports, __webpack_require__) {
 
-	exports = module.exports = __webpack_require__(194)();
+	exports = module.exports = __webpack_require__(195)();
 	// imports
 
 
@@ -22669,7 +22766,7 @@
 
 
 /***/ },
-/* 194 */
+/* 195 */
 /***/ function(module, exports) {
 
 	/*
@@ -22725,7 +22822,7 @@
 
 
 /***/ },
-/* 195 */
+/* 196 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/*
