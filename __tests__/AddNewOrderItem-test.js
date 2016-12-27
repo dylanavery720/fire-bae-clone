@@ -9,7 +9,7 @@ describe('AddNewOrderItem', () => {
   let expectedDefaultItemData;
 
   beforeEach(() => {
-    expectedDefaultItemData = { freqNum: 1, freqQual: 'month', iName: '' };
+    expectedDefaultItemData = { date: null, freqNum: 1, freqQual: 'month', iName: '' };
   });
 
   it('mounts without props', () => {

@@ -6,7 +6,7 @@ export default function (props = {}) {
   const { items = [] } = props;
   return (
     <div>
-      { items.map((item) => <ItemCard item={ item } />) }
+      { items.map((item) => <ItemCard item={item} />) }
     </div>
   );
 }

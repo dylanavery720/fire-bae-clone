@@ -1,4 +1,5 @@
 import React from 'react';
+import { SingleDatePicker } from 'react-dates';
 
 export default class AddNewOrderItem extends React.Component {
   constructor(props) {
@@ -7,6 +8,7 @@ export default class AddNewOrderItem extends React.Component {
       iName: '',
       freqNum: 1,
       freqQual: 'month',
+      date: this.props.moment ? this.props.moment() : null,
     };
     this.handleChange = this.handleChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
@@ -49,6 +51,18 @@ export default class AddNewOrderItem extends React.Component {
               <option value="week">week(s)</option>
               <option value="year">year(s)</option>
             </select>
+        </label>
+        <label>
+          Last purchased on:
+          <SingleDatePicker
+            id="date_input"
+            isOutsideRange={() => false}
+            numberOfMonths={1}
+            date={this.state.date}
+            focused={this.state.focused}
+            onDateChange={(date) => { this.setState({ date }); }}
+            onFocusChange={({ focused }) => { this.setState({ focused }); }}
+          />
         </label>
         <input className="item__create-submit"
                type="submit"
