@@ -13,6 +13,7 @@ export default (props) => {
     <div>
       <p> { item.iName } </p>
       <p> { formatedFrequencyText(item) } </p>
+      <p> Last purchased: { item.prettyDate } </p>
     </div>
   );
 };
