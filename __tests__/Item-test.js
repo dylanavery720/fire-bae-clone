@@ -5,7 +5,7 @@ describe('Item', () => {
   it('creates a new item', () => {
     const user = { uid: 7 };
     const itemPayload = { iName: 'New Item', freqNum: 1, freqQual: 'eon(s)' };
-    const item = new Item(user, itemPayload);
+    const item = new Item(itemPayload, user);
     Object.keys(itemPayload).forEach((key) => {
       expect(item[key]).toEqual(itemPayload[key]);
     });
