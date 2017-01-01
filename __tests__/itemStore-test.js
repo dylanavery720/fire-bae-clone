@@ -2,14 +2,33 @@
 import ItemStore from '../lib/ItemStore';
 import sampleFormItem from '../__test-helpers__/sampleItemFormPayload';
 import sampleItems from '../__test-helpers__/sampleItemsPayload';
+import { itemStorageStructure } from '../lib/utils';
 
 import Item from '../lib/Item';
 
 describe('ItemStore', () => {
   let subject;
+  let structure;
 
   beforeEach(() => {
     subject = new ItemStore();
+    structure = itemStorageStructure();
+  });
+
+  describe('.populate', () => {
+    it('returns an object with due, coming soon, future', () => {
+      expect(subject.items).toEqual(structure);
+    });
+
+    it('sorts items into the appropriate containers', () => {
+      subject = new ItemStore(sampleItems);
+      expect(subject.items.due.length).toEqual(1);
+      expect(subject.items.due[0].iName).toEqual('Shoes');
+      expect(subject.items.due[0]).toBeInstanceOf(Item);
+
+      expect(subject.items.past.length).toEqual(1);
+      expect(subject.items.upcoming.length).toEqual(2);
+    });
   });
 
   describe('.new', () => {
@@ -22,7 +41,7 @@ describe('ItemStore', () => {
       });
       expect(output.id).toEqual('-K_0m05PNVsqNHxP1XFp');
       expect(output.user.uid).toEqual('VCDW6de4Blhrdd8AfoLAck6Gr8h1');
-      expect(subject.items).toEqual([]);
+      expect(subject.items).toEqual(structure);
     });
 
     it('generates an unstored new item from form data', () => {
@@ -38,16 +57,7 @@ describe('ItemStore', () => {
       expect(output.timestamp).toEqual('2016-12-28T10:56:29-07:00');
       expect(output.prettyDate).toEqual('December 28th 2016');
       expect(output.user.uid).toEqual(7);
-      expect(subject.items).toEqual([]);
-    });
-  });
-
-  describe('initialize', () => {
-    it('takes a payload and creates items', () => {
-      subject = new ItemStore(sampleItems);
-      expect(subject.items.length).toEqual(4);
-      expect(subject.items[0].iName).toEqual('Socks');
-      expect(subject.items[0]).toBeInstanceOf(Item);
+      expect(subject.items).toEqual(structure);
     });
   });
 
@@ -55,20 +65,15 @@ describe('ItemStore', () => {
     it('creates an item and saves it to the items', () => {
       const itemPayload = sampleItems[0];
       subject.create(itemPayload);
-      expect(subject.items.length).toEqual(1);
+      expect(subject.items.due.length).toEqual(0);
+      expect(subject.items.past.length).toEqual(0);
+      expect(subject.items.upcoming.length).toEqual(1);
 
       const itemPayload2 = sampleItems[1];
       subject.create(itemPayload2);
-      expect(subject.items.length).toEqual(2);
-    });
-  });
-
-  describe('.all', () => {
-    it('sorts items by due, coming soon, future', () => {
-    // const input = sampleItems;
-    // const output = itemStore(input).dividedByDue();
-    // const expectedOutput = {};
-    // expect(output).toEqual(expectedOutput);
+      expect(subject.items.due.length).toEqual(1);
+      expect(subject.items.past.length).toEqual(0);
+      expect(subject.items.upcoming.length).toEqual(1);
     });
   });
 });

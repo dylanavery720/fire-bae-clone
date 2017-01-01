@@ -4,6 +4,7 @@ import ItemStore from '../ItemStore';
 
 import Button from './Button';
 import ItemMainContent from './ItemMainContent';
+import { itemStorageStructure } from '../utils';
 
 export default class App extends React.Component {
   constructor(props) {
@@ -11,7 +12,7 @@ export default class App extends React.Component {
     this.state = {
       user: null,
       showForm: false,
-      items: [],
+      items: itemStorageStructure(),
       ItemStore: new ItemStore(),
     };
     this.updateUser = this.updateUser.bind(this);
@@ -31,7 +32,9 @@ export default class App extends React.Component {
   handleSubmitNewForm(itemPayload) {
     this.showFormToggle();
     const currentUser = this.props.firebase.auth.currentUser;
-    if (currentUser) { this.createItem(currentUser, itemPayload); }
+    if (currentUser) {
+      this.createItem(currentUser, itemPayload);
+    }
   }
 
   showFormToggle() {
@@ -58,7 +61,7 @@ export default class App extends React.Component {
     } else {
       this.setState({ user: null });
       this.setState({ ItemStore: new ItemStore() });
-      this.setState({ items: [] });
+      this.setState({ items: {} });
     }
   }
 
