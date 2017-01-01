@@ -1,9 +1,10 @@
 import React from 'react';
 
-import Item from '../Item';
+import ItemStore from '../ItemStore';
 
 import Button from './Button';
 import ItemMainContent from './ItemMainContent';
+import { itemStorageStructure } from '../utils';
 
 export default class App extends React.Component {
   constructor(props) {
@@ -11,11 +12,13 @@ export default class App extends React.Component {
     this.state = {
       user: null,
       showForm: false,
-      items: [],
+      items: itemStorageStructure(),
+      ItemStore: new ItemStore(),
     };
     this.updateUser = this.updateUser.bind(this);
     this.showFormToggle = this.showFormToggle.bind(this);
     this.handleSubmitNewForm = this.handleSubmitNewForm.bind(this);
+    this.formatItemsPayload = this.formatItemsPayload.bind(this);
     this.signIn = this.signIn.bind(this);
     this.signOut = this.signOut.bind(this);
   }
@@ -29,20 +32,36 @@ export default class App extends React.Component {
   handleSubmitNewForm(itemPayload) {
     this.showFormToggle();
     const currentUser = this.props.firebase.auth.currentUser;
-    if (currentUser) { this.createItem(currentUser, itemPayload); }
+    if (currentUser) {
+      this.createItem(currentUser, itemPayload);
+    }
   }
 
   showFormToggle() {
     this.setState({ showForm: !this.state.showForm });
   }
 
+  formatItemsPayload(itemsPayload) {
+    const store = new ItemStore(itemsPayload);
+    this.setState({ ItemStore: store });
+    this.setState({ items: store.items });
+  }
+
+  createItem(currentUser, itemPayload) {
+    const store = this.state.ItemStore;
+    const item = store.create(itemPayload, currentUser);
+    this.props.firebase.createItem(currentUser, item.sanitizedForDB());
+    this.setState({ items: store.items });
+  }
+
   updateUser(user) {
     if (user) {
       this.setState({ user });
-      this.props.firebase.getItems(user, (items) => this.setState({ items }));
+      this.props.firebase.getItems(user, this.formatItemsPayload);
     } else {
       this.setState({ user: null });
-      this.setState({ items: [] });
+      this.setState({ ItemStore: new ItemStore() });
+      this.setState({ items: {} });
     }
   }
 
@@ -52,14 +71,6 @@ export default class App extends React.Component {
 
   signOut() {
     this.props.firebase.signOut();
-  }
-
-  createItem(currentUser, itemPayload) {
-    const item = new Item(currentUser, itemPayload);
-    this.props.firebase.createItem(currentUser, item);
-    const itemStorage = this.state.items.slice();
-    itemStorage.push(item);
-    this.setState({ items: itemStorage });
   }
 
   render() {
